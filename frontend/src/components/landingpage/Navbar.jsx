@@ -19,7 +19,7 @@ const Navbar = () => {
                     <div className="row">
                         <div className="col-lg-12">
                             <nav className="navbar navbar-expand-lg" >
-                                <a className="navbar-brand" href="#">
+                                <a className="navbar-brand" href="/">
                                     <h3 className='text-white fs-italic'><i class="bi bi-backpack4"></i> Itineri.<span>AI</span></h3>
                                 </a>
                                 <button
