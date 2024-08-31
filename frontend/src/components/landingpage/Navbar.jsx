@@ -41,7 +41,7 @@ const Navbar = () => {
                                 >
                                     <ul className="navbar-nav m-auto pb-1" style={{ borderBottom: '1px solid #0001' }}>
                                         <li className="nav-item">
-                                            <a href="#about" className='fs-5'>About</a>
+                                            <a href="/about" className='fs-5'>About</a>
                                         </li>
                                         <li className="nav-item">
                                             <a href="/recommendations" className='fs-5'>TripSage</a>

@@ -14,6 +14,7 @@ import History from './components/dashboard/History'
 import Collaborator from './components/dashboard/Collabrator'
 import Recommendations from './components/dashboard/Recommendations'
 import TravelExpense from './components/dashboard/TravelExpense'
+import About from './components/landingpage/About';
 function App() {
   AOS.init();
 
@@ -23,6 +24,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<About />} />
           <Route path="/preferences" element={<Dashboard />} />
           <Route path="/plan" element={<Planner />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
