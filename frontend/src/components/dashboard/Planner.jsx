@@ -1,146 +1,234 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import gif from '../landingpage/assets/loader.gif';
 import Navbar from '../landingpage/Navbar';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import gif from '../landingpage/assets/loader.gif'; // Assuming you have a loader GIF
+import MapComponent from '../map/map';
 
 const Planner = () => {
+    const [coords, setCords] = useState();
     const location = useLocation();
     const data = location.state?.formData;
-
-    const [itinerary, setItinerary] = useState(null);
-    const [error, setError] = useState(null);
-    const [selectedDay, setSelectedDay] = useState(null); // State to track selected day for the modal
-    const [showModal, setShowModal] = useState(false); // State to control modal visibility
-
-    const fetchItineraryData = async () => {
-        try {
-            const response = await axios.post('http://192.168.137.11:3000/suggestTrip', {
-                city: data?.personalDetails?.city,
-                interest: data?.itineraryDetails?.selectedTabs,
-                days: data?.budget?.travelDays,
-            });
-            console.log(response)
-            const data2 = JSON.parse(response.data.jsonString);
-            console.log(data2);
-            setItinerary(data2);
-        } catch (error) {
-            console.error("Error fetching itinerary data:", error);
-            setError(error.message);
-        }
-    };
+    const [dashData, setDashData] = useState(null);
+    const [loading, setLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
 
     useEffect(() => {
-        fetchItineraryData();
-    }, []);
+        const fetchData = async () => {
+            try {
+                let ndata = JSON.stringify({
+                    city: data.personalDetails.city,
+                    interest: data.itineraryDetails.selectedTabs,
+                    days: data.budget.travelDays,
+                });
 
-    const handleDayClick = (day) => {
-        setSelectedDay(day);
-        setShowModal(true);
-    };
+                let config = {
+                    method: "post",
+                    maxBodyLength: Infinity,
+                    url: "https://t83s14q4-3000.inc1.devtunnels.ms/suggestTrip",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    data: ndata,
+                };
 
-    const handleClose = () => setShowModal(false);
+                // Set a timeout of 15 seconds
+                setTimeout(async () => {
+                    try {
+                        const response = await axios.request(config);
+                        const parsedData = JSON.parse(response.data);
+                        console.log(parsedData);
+                        setDashData(parsedData);
+                        console.log(parsedData[0].placesToVisit)
+                        // Extract and set coordinatesconst locationsArray = [];
+
+                        // Extract places to visit
+                        let coord = [];
+                        parsedData[0].placesToVisit.forEach(place => {
+                            coord.push({
+                                name: place.name,
+                                lng: place.location.longitude,
+                                lat: place.location.latitude,
+                                type: "place"
+                            });
+                        });
+
+                        // Extract restaurants to dine at
+                        parsedData[0].restaurantsToDineAt.forEach(restaurant => {
+                            coord.push({
+                                name: restaurant.name,
+                                lng: restaurant.location.longitude,
+                                lat: restaurant.location.latitude,
+                                type: "restaurant"
+                            });
+                        });
+
+                        // Extract hotel to stay in
+                        coord.push({
+                            name: parsedData[0].hotelToStayIn.name,
+                            lng: parsedData[0].hotelToStayIn.location.longitude,
+                            lat: parsedData[0].hotelToStayIn.location.latitude,
+                            type: "hotel"
+                        });
+                        setCords(coord)
+
+
+                        setLoading(false);
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                        setError(error.message);
+                        setLoading(false);
+                    }
+                }, 100); // 15 seconds
+            } catch (error) {
+                console.error("Error:", error);
+                setError(error.message);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [data]);
 
     return (
         <div>
             <Navbar />
-            {error && <p>Error: {error}</p>}
-            {itinerary ? (
-                <div className='container'>
-                    <h2 className='text-center fs-4 my-2'><span className='text-primary'>Congratulations!</span> Your Trip Plan Is Ready.....</h2>
-                    <div className='my-2 d-flex justify-content-center'>
-                        {/* Tabs for each day */}
-                        {itinerary.trip?.map((day, index) => (
-                            <Button
-                                key={index}
-                                variant="outline-primary"
-                                color='primary'
-                                className="m-2"
-                                onClick={() => handleDayClick(day)}
-                            >
-                                Day {day.day}
-                            </Button>
-                        ))}
-                    </div>
-                    <div className="container text-center">
-                        click on the perticular day to know about what you can do on that day
-                    </div>
-                    {/* Modal for displaying day details */}
-                    <Modal show={showModal} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Day {selectedDay?.day} Itinerary</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            {selectedDay && (
-                                <div>
-                                    <h4 className='fs-6'>Places to Visit</h4>
-                                    {selectedDay.placesToVisit?.map((place, idx) => (
-                                        <div key={idx} className='my-2'>
-                                            <p className='fw-bold'> {place.name}</p>
-                                            <p className='fw-bold'>
-                                                {place.category?.map((cat, index) => (
-                                                    <span
-                                                        key={index}
-                                                        style={{
-                                                            backgroundColor: 'green',
-                                                            color: 'white',
-                                                            padding: '0.2rem 0.4rem',
-                                                            borderRadius: '5px',
-                                                            marginRight: '0.5rem',
-                                                            display: 'inline-block'
-                                                        }}
-                                                    >
-                                                        {cat}
-                                                    </span>
-                                                ))}
-                                            </p>
-                                            <p className='fw-bold'> {place.location?.address}</p>
-                                            <p className='fw-bold'> {place.description}</p>
-                                            <img height="150px" style={{ borderRadius: "15px" }} src={place.imageUrl} alt="" />
-                                        </div>
-                                    ))}
-
-                                    <h4>Restaurants to Dine At</h4>
-                                    {selectedDay.restaurantsToDineAt?.map((restaurant, idx) => (
-                                        <div key={idx}>
-                                            <p><strong>Name:</strong> {restaurant.name}</p>
-                                            <p><strong>Cuisine Types:</strong> {restaurant.cuisineTypes?.join(', ')}</p>
-                                            <p><strong>Address:</strong> {restaurant.location?.address}</p>
-                                            <p><strong>Description:</strong> {restaurant.description}</p>
-                                        </div>
-                                    ))}
-
-                                    <h4>Activities to Enjoy</h4>
-                                    {selectedDay.activitiesToEnjoy?.map((activity, idx) => (
-                                        <div key={idx}>
-                                            <p><strong>Name:</strong> {activity.name}</p>
-                                            <p><strong>Description:</strong> {activity.description}</p>
-                                        </div>
-                                    ))}
-
-                                    <h4>Hotel to Stay In</h4>
-                                    <p><strong>Name:</strong> {selectedDay.hotelToStayIn?.name}</p>
-                                    <p><strong>Address:</strong> {selectedDay.hotelToStayIn?.location?.address}</p>
-                                    <p><strong>Description:</strong> {selectedDay.hotelToStayIn?.description}</p>
-                                </div>
-                            )}
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Close
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
+            {loading ? (
+                <div style={{ height: "100vh", flexDirection: 'column' }} className='container d-flex justify-content-center align-items-center' >
+                    <img src={gif} height='150px' width='150px' alt="Loading..." />
+                    <p>Wait! Generating suggestions just for you :</p>
                 </div>
+            ) : error ? (
+                <p>Error: {error}</p>
             ) : (
-                <div style={{ height: "100vh", flexDirection: "column" }} className='container d-flex justify-content-center align-items-center'>
-                    <img src={gif} height='150px' width='150px' alt="" />
-                    Preparing Your Plan.....
-                </div>
-            )}
-        </div>
+                <section className=" pb-5">
+                    <div className="container-fluid">
+
+                        <div className="row">
+                            <h3 className='m-5'>Hotels</h3>
+                            <div className=" d-flex justify-content-end flex-wrap" style={{ justifyContent: "flex-start" }}>
+
+                                {dashData && dashData.length > 0 ? (
+                                    dashData.map((item, index) => (
+                                        <div key={index} className="p-3" style={{ margin: '0 auto' }}>
+
+
+
+                                            <div className="d-flex align-items-start justify-content-start p-3" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px', maxWidth: '400px', minHeight: "330px" }}>
+                                                <div className="blog-image">
+                                                    <a href="">
+                                                        <img src={item.hotelToStayIn.imageUrl} height="200px" alt="Blog" style={{ borderRadius: '15px' }} />
+                                                        <h6 className='px-2 py-3'>Day {item.day}</h6>
+                                                    </a>
+                                                </div>
+                                                <div className="blog-content m-2 p-2">
+                                                    <a href="" className="category text-dark">{item.hotelToStayIn.openingHours}</a>
+                                                    <h5 className="blog-title py-1">
+                                                        <a href="" className='text-dark fw-bold'>
+                                                            {item.hotelToStayIn.name}
+                                                        </a>
+                                                    </h5>
+                                                    <span><b>Price:</b> {item.hotelToStayIn.priceRange}</span> <br />
+                                                    <span className='py-1'><b>Opening Time:</b> {item.hotelToStayIn.openingHours}</span> <br />
+                                                    <span><b>Cusines:</b> {item.hotelToStayIn.cuisineTypes?.join(', ') || 'NA'}</span> <br />
+                                                    <p className="text">
+                                                        {item.hotelToStayIn.description}
+                                                    </p>
+                                                    <a className="more text-dark" href="">Contact: {item.hotelToStayIn.contactNumber}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No data available.</p>
+                                )}
+                            </div>
+                            <div className='row'>
+
+                                <div className="col-9">
+                                    <div className="">
+                                        <div className="row">
+                                            <h3 className='m-5'>Places To Visit</h3>
+                                            <div className="col-12 d-flex flex-wrap">
+                                                {dashData && dashData.length > 0 && dashData[0].placesToVisit ? (
+                                                    dashData[0].placesToVisit.map((item, index) => (
+                                                        <div key={index} className="p-3" style={{ margin: '' }}>
+                                                            <div className=" p-3" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px', maxWidth: '400px', maxHeight: '400px' }}>
+                                                                <div className="blog-image">
+                                                                    <a href={item.mapLink || "#"} target="_blank" rel="noopener noreferrer">
+                                                                        <img src={item.imageUrl} height="150px" width="100%" alt={item.name} style={{ borderRadius: '15px' }} />
+                                                                    </a>
+                                                                </div>
+                                                                <div className="blog-content m-2 p-2">
+                                                                    <a href="#" className="category text-dark">{item.category?.join(', ') || 'NA'}</a>
+                                                                    <h5 className="blog-title py-1">
+                                                                        <a href="#" className='text-dark fw-bold' style={{ fontSize: '16px' }}>
+                                                                            {item.name}
+                                                                        </a>
+                                                                    </h5>
+                                                                    <span className='fs-6' style={{ fontSize: '16px' }}><b>Price Per Adult:</b> ${item.pricePerAdult}</span> <br />
+                                                                    <span className='py-1 '><b>Duration:</b> {item.duration}</span> <br />
+                                                                    <span><b>Address:</b> {item.location.address}</span> <br />
+                                                                    <p className="text" style={{ fontSize: '16px' }}>
+                                                                        {item.description}
+                                                                    </p>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p>No data available.</p>
+                                                )}
+                                            </div>
+
+                                        </div>
+                                        <div className='col-12'>
+                                            <h3 className='m-5'>Restaurants & Dine In</h3>
+                                            {dashData && dashData.length > 0 && dashData[0].restaurantsToDineAt ? (
+                                                <div className="row">
+                                                    {dashData[0].restaurantsToDineAt.map((item, index) => (
+                                                        <div key={index} className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                                                            <div className="card h-100" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px' }}>
+                                                                <div className="card-img-top">
+                                                                    <a href={item.mapLink || "#"} target="_blank" rel="noopener noreferrer">
+                                                                        <img src={item.imageUrl} alt={item.name} style={{ borderRadius: '15px 15px 0 0', height: '250px', objectFit: 'cover', width: '100%' }} />
+                                                                    </a>
+                                                                </div>
+                                                                <div className="card-body p-3">
+                                                                    <a href="#" className="category text-dark" style={{ fontSize: '14px' }}>{item.category?.join(', ') || 'NA'}</a>
+                                                                    <h5 className="card-title py-1" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                                                        <a href="#" className='text-dark' style={{ textDecoration: 'none' }}>
+                                                                            {item.name}
+                                                                        </a>
+                                                                    </h5>
+                                                                    <p className='mb-1' style={{ fontSize: '14px' }}><b>Duration:</b> {item.duration}</p>
+                                                                    <p className='mb-1' style={{ fontSize: '14px' }}><b>Address:</b> {item.location.address}</p>
+                                                                    <p className="text" style={{ fontSize: '13px' }}>
+                                                                        {item.description}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p>No data available.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <MapComponent coordinates={coords} />
+
+
+                        </div>
+                    </div>
+                </section >
+            )
+            }
+        </div >
     );
 };
 
