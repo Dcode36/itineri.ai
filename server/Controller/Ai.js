@@ -1,21 +1,8 @@
-const { default: axios } = require("axios");
+const Bus = require("../Models/ModeOfTravel/Bus");
+const Flight = require("../Models/ModeOfTravel/Flight");
+const Train = require("../Models/ModeOfTravel/Train");
 const City = require("../Models/PlacesToVisit/City");
-const { main, run } = require("./functions");
-function extractJsonString(text) {
-  const startIndex = text.indexOf("```json");
-  console.log(startIndex);
-  const endIndex = text.indexOf("```", startIndex + 1);
-  console.log(endIndex);
-  if (startIndex === -1 || endIndex === -1) {
-    return null; // or handle the error as needed
-  }
-
-  // Adjusting indices to exclude the ```json and ```
-  let jsonString = text.substring(startIndex + 7, endIndex).trim();
-  jsonString = jsonString.replaceAll(/\\n/g, "");
-  // console.log(jsonString);
-  return jsonString;
-}
+const { run } = require("./functions");
 const suggestPlaces = async (req, res) => {
   console.log(req.body);
   try {
@@ -54,35 +41,31 @@ const suggestPlaces = async (req, res) => {
   }
 };
 
+const cache = {};
+
 const suggestTrip = async (req, res) => {
   console.log(req.body);
   try {
     const { city, interest, days } = req.body;
+
+    // Generate a unique cache key based on the request parameters
+    const cacheKey = `${city}-${interest.join(',')}-${days}`;
+
+    // Check if the result is already in the cache
+    if (cache[cacheKey]) {
+      console.log('Cache hit');
+      return res.json(cache[cacheKey]);
+    }
+
+    // Fetch data from the database
     const Places = await City.findOne({ name: city }).populate(
-      "places restaurent"
+      "places restaurent hotels"
     );
-    // let weather = {};
-    // try {
-    //   weather = await axios.get(
-    //     `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=12ee96497996d8cb1141d61d89d7b5cf`
-    //   );
-    //   console.log(weather.data);
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    console.log(Places);
+
     const suggestedPlaces = Places.places.filter((place) =>
       place.category.some((category) => interest.includes(category))
     );
-    // console.log(
-    //   `only Generate a JSON array for a ${days}-day trip to ${
-    //     Places.name
-    //   }. For each day, include in sequence: places to visit, restaurants to dine at, activities to enjoy, and a hotel to stay in at the end of the day. I am particularly interested in the following places: ${suggestedPlaces.join(
-    //     ", "
-    //   )}. Based on the number of days, prioritize the most important places and exclude those of lesser significance. Provide a detailed JSON array of the selected important places, including all relevant information. Additionally, create a JSON array of restaurants to visit from the following options: ${Places.restaurent.join(
-    //     ", "
-    //   )}. Include all available details for the chosen places and restaurants.`
-    // );
+
     const result = await run(
       `only Generate a JSON array for a ${days}-day trip to ${
         Places.name
@@ -92,24 +75,10 @@ const suggestTrip = async (req, res) => {
         ", "
       )}. Include all available details for the chosen places and restaurants.`
     );
-    //     const result =
-    //       main(`Generate a detailed itinerary for a trip based on the following inputs:
 
-    // Number of Days: ${days}
-    // Number of People: 2
-    // Destination: ${Places.name}
-    // Places to Visit: ${suggestedPlaces.map((place) => place.name).join(", ")}
-    // Restaurants to Visit: ${Places.restaurent.map((place) => place.name).join(", ")}
-    // Create a JSON array where each entry represents a day of the trip. Each day's itinerary should include:
+    // Store the result in the cache
+    cache[cacheKey] = result;
 
-    // Day Number: Sequential day number of the trip.
-    // combine all the places to visit, restaurants to visit, activities to enjoy, and a hotel to stay in at the end of the day.
-
-    // `);
-    // console.log("result:", result);
-    // const data = extractJsonString(result);
-    // console.log("suggested:", suggestedPlaces);
-    // console.log(jsonString);
     res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -123,7 +92,35 @@ const suggestTripDemo = async (req, res) => {
   });
 };
 
+// const getBestTravel = async (req, res) => {
+//   try {
+//     const { source, destination, minBudget, maxBudget } = req.body;
+//     const Buses = await Bus.find({ source, destination });
+//     console.log(Buses);
+//     const Trains = await Train.find({ source, destination });
+//     const Flights = await Flight.find({ source, destination });
+//     const city = await City.findOne({ name: source }).populate("hotels");
+//     const hotels = city.hotels;
+
+//     const prompt = `by looking at the available options of travel and hotels, i want the best travel plan in the budget of ${minBudget} to ${maxBudget} Bus options are ${Buses.map(
+//       (bus) => bus
+//     ).join(", ")} Train options are ${Trains.map((train) => train).join(
+//       ", "
+//     )} Flight options are ${Flights.map((flight) => flight).join(
+//       ", "
+//     )} Hotel options are ${hotels
+//       .map((hotel) => hotel)
+//       .join(", ")} give the array of best travel plan`;
+//     const result = await runs(prompt);
+//     res.json(result);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 module.exports = {
   suggestPlaces,
-  suggestTrip,suggestTripDemo
+  suggestTrip,
+  suggestTripDemo,
+  // getBestTravel,
 };

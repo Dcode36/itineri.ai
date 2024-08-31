@@ -5,21 +5,29 @@ const Restaurant = require("../Models/PlacesToVisit/Restaurent");
 
 const getAllHotels = async (req, res) => {
   try {
-    const Hotels = await Restaurant.find();
-    const newH = Hotels.filter(
-      (hotel) => hotel.location.address?.split(",")[1] === " Pune"
-    );
-    console.log(newH);
-    const Cities = await City.findOne({ name: "Pune" });
-    console.log(Cities);
-    newH.forEach((hotel) => {
-      console.log(hotel._id);
-      if (!Cities.restaurent.includes(hotel._id)) {
-        Cities.restaurent.push(hotel._id);
-      }
+    // const Hotels = await Hotel.find();
+    // console.log(Hotels[0].location);
+    // const newH = Hotels.filter(
+    //   (hotel) => hotel.location.address?.split(",")[1] === " Panaji"
+    // );
+    // console.log(newH);
+    // const Cities = await City.findOne({ name: "Panaji" });
+    // console.log(Cities);
+    // newH.forEach((hotel) => {
+    //   console.log(hotel._id);
+    //   if (!Cities.hotels.includes(hotel._id)) {
+    //     Cities.hotels.push(hotel._id);
+    //   }
+    // });
+    // await Cities.save();
+    // res.json(newH);
+
+    const Hotels = await Hotel.find();
+    Hotels.forEach(async (hotel) => {
+      hotel.price = Math.floor(Math.random() * 10000);
+      await hotel.save();
     });
-    await Cities.save();
-    res.json(newH);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
     console.log(error);

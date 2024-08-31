@@ -10,13 +10,12 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 
-
-
 const TravelExpense = () => {
   const [value, setValue] = useState('1');
   const [source, setSource] = useState('');
   const [destination, setDestination] = useState('');
   const [travelData, setTravelData] = useState({ buses: [], trains: [], flights: [] });
+  const [weatherData, setWeatherData] = useState(null);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -24,13 +23,21 @@ const TravelExpense = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.post('https://t83s14q4-4000.inc1.devtunnels.ms/travel', {
+      // Fetch travel data
+      const travelResponse = await axios.post('https://t83s14q4-4000.inc1.devtunnels.ms/travel', {
         source,
         destination,
       });
-      setTravelData(response.data);
+      setTravelData(travelResponse.data);
+
+      // Fetch weather data
+      const apiKey = '12ee96497996d8cb1141d61d89d7b5cf';
+      const weatherResponse = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${destination}&appid=${apiKey}`
+      );
+      setWeatherData(weatherResponse.data);
     } catch (error) {
-      console.error('Error fetching travel data:', error);
+      console.error('Error fetching data:', error);
     }
   };
 
@@ -70,6 +77,17 @@ const TravelExpense = () => {
           </div>
         </div>
 
+        {/* Weather Information */}
+        {weatherData && (
+          <div className='mt-3'>
+            <h4>Weather in {weatherData.name}</h4>
+            <p>Temperature: {(weatherData.main.temp - 273.15).toFixed(2)} °C</p>
+            <p>Weather: {weatherData.weather[0].description}</p>
+            <p>Humidity: {weatherData.main.humidity}%</p>
+          </div>
+        )}
+
+        {/* Travel Options */}
         <div className='mt-3'>
           <Box sx={{ width: '100%', typography: 'body1' }}>
             <TabContext value={value}>
