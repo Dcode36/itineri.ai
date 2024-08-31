@@ -2,9 +2,11 @@ const express = require("express");
 const axios = require("axios");
 const { getAllHotels, getHotelById } = require("./Controller/Hotel");
 const { getAvailableCities, getCity } = require("./Controller/City");
-const { suggestPlaces } = require("./Controller/Ai");
+const { suggestPlaces, suggestTrip } = require("./Controller/Ai");
+const cors = require("cors");
 const app = express();
 app.use(express.json());
+app.use(cors())
 require("./Config/db");
 require("./Models/PlacesToVisit/Restaurent");
 
@@ -18,6 +20,7 @@ app.get("/city/:id", getCity);
 
 //ai routes
 app.post("/suggestPlaces", suggestPlaces);
+app.post("/suggestTrip", suggestTrip);
 app.listen(3000, () => {
   console.log("Hello World");
 });
