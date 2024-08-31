@@ -7,6 +7,7 @@ import 'aos/dist/aos.css';
 import Dashboard from './components/dashboard/Dashboard';
 
 import 'react-toastify/dist/ReactToastify.css';
+import Planner from './components/dashboard/Planner';
 function App() {
   AOS.init();
 
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/preferences" element={<Dashboard />} />
+          <Route path="/plan" element={<Planner />} />
         </Routes>
       </Router>
 

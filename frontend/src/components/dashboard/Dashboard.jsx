@@ -8,6 +8,12 @@ import Typography from '@mui/material/Typography';
 import { Tabs, Tab } from '@mui/material';
 import Navbar from '../landingpage/Navbar';
 import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
 const steps = ['Destination', 'No of Travelers', 'Days', 'Interest', 'Review & Proceed'];
 const TAB_ENUM = [
     'Historical',
@@ -19,8 +25,10 @@ const TAB_ENUM = [
     'Night Life',
     'Outdoor'
 ];
+const DAYS_OPTIONS = ['3', '5', '7'];
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({
         personalDetails: {},
@@ -49,7 +57,9 @@ const Dashboard = () => {
 
     const handleSubmit = () => {
         // Submit logic here
-        console.log('Final Submission:', formData);
+        navigate('/plan', { state: { formData } })
+
+
     };
 
     const handleChange = (step, data) => {
@@ -113,9 +123,11 @@ const Dashboard = () => {
                                     Back
                                 </Button>
                                 {activeStep === steps.length - 1 ? (
-                                    <Button onClick={handleSubmit}>Submit</Button>
+                                    <Button onClick={handleSubmit} className='btn btn-primary' color="primary" // This sets the button color to primary
+                                        variant="contained">Submit</Button>
                                 ) : (
-                                    <Button onClick={handleNext}>Next</Button>
+                                    <Button onClick={handleNext} className='btn btn-primary' color="primary" // This sets the button color to primary
+                                        variant="contained">Next</Button>
                                 )}
                             </Box>
                         </React.Fragment>
@@ -136,75 +148,126 @@ const PersonalDetailsForm = ({ data, onChange }) => {
         <div className='container'>
             <div className='my-5'>
                 <Typography variant="h6" align="center" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>What’s your next travel spot?</Typography>
-                <input
-                    type="text"
-                    name="fullName"
-                    value={data.fullName || ''}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Mumbai"
-                    className='p-2 px-3 w-100'
-                    style={{
-                        borderRadius: '30px',
-                        border: '1px solid gray',
-                        fontSize: '1rem'
-                    }}
-                />
+                <Box sx={{ minWidth: 120 }} className="d-flex justify-content-center">
+                    <FormControl style={{ width: "50%" }}>
+                        <InputLabel id="city-select-label">City</InputLabel>
+                        <Select
+                            labelId="city-select-label"
+                            id="city-select"
+                            value={data.city || ''} // Ensure the value points to the correct property
+                            label="City"
+                            onChange={handleInputChange}
+                            name='city'
+                            style={{
+                                borderRadius: '30px',
+                                border: '1px solid gray',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            <MenuItem value='Kolhapur'>Kolhapur</MenuItem>
+                            <MenuItem value='Navi Mumbai'>Navi Mumbai</MenuItem>
+                            <MenuItem value='Pune'>Pune</MenuItem>
+                            <MenuItem value='Panjim'>Panjim</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
             </div>
         </div>
     );
 };
 
 const TravelPreferencesForm = ({ data, onChange }) => {
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        onChange({ ...data, [name]: value });
+    const TAB_TRAVELERS = ['Solo', 'Couple', 'Group'];
+
+    const handleTabChange = (event, newValue) => {
+        onChange({ ...data, numTravelers: newValue });
     };
 
     return (
         <div className='container'>
-            <div className='my-5'>
-                <Typography variant="h6" align="center" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>What’s the total number of travelers?</Typography>
-                <input
-                    type="number"
-                    name="numTravelers"
-                    value={data.numTravelers || ''}
-                    onChange={handleInputChange}
-                    placeholder="0"
-                    className='p-2 px-3 w-100'
-                    style={{
-                        borderRadius: '30px',
-                        border: '1px solid gray',
-                        fontSize: '1rem'
-                    }}
-                />
+            <div className='my-5 d-flex flex-column align-items-center'>
+                <Typography variant="h6" align="center" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' }, fontWeight: 'bold' }}>
+                    What’s the total number of travelers?
+                </Typography>
+                <Box sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
+                    <Tabs
+                        value={data.numTravelers || false}
+                        aria-label="traveler type tabs"
+                        centered
+                        sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    >
+                        <div className='d-flex gap-3 flex-wrap justify-content-center my-3'>
+                            {TAB_TRAVELERS.map((tabLabel, index) => (
+                                <div className='d-flex' key={index}>
+                                    <Tab
+                                        label={tabLabel}
+                                        value={tabLabel}
+                                        onClick={(e) => handleTabChange(e, tabLabel)}
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            bgcolor: data.numTravelers === tabLabel ? 'green' : 'transparent',
+                                            color: data.numTravelers === tabLabel ? 'white' : 'black',
+                                            borderRadius: '30px',
+                                            '&:hover': {
+                                                bgcolor: 'green',
+                                                color: 'white',
+                                            },
+                                            border: '1px solid green'
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </Tabs>
+                </Box>
             </div>
         </div>
     );
 };
 
+
 const BudgetForm = ({ data, onChange }) => {
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        onChange({ ...data, [name]: value });
+    const handleTabChange = (event, newValue) => {
+        onChange({ ...data, travelDays: newValue });
     };
 
     return (
         <div className='container'>
-            <div className='my-5'>
-                <Typography variant="h6" align="center" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>How many days do you plan to travel?</Typography>
-                <input
-                    type="number"
-                    name="travelDays"
-                    value={data.travelDays || ''}
-                    onChange={handleInputChange}
-                    placeholder="5 Days"
-                    className='p-2 px-3 w-100'
-                    style={{
-                        borderRadius: '30px',
-                        border: '1px solid gray',
-                        fontSize: '1rem'
-                    }}
-                />
+            <div className='my-5 d-flex flex-column align-items-center'>
+                <Typography variant="h6" align="center" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' }, fontWeight: 'bold' }}>
+                    How many days do you plan to travel?
+                </Typography>
+                <Box sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
+                    <Tabs
+                        value={data.travelDays || false}
+                        aria-label="days tabs"
+                        centered
+                        sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    >
+                        <div className='d-flex gap-3 flex-wrap justify-content-center my-3'>
+                            {DAYS_OPTIONS.map((dayLabel, index) => (
+                                <div className='d-flex' key={index}>
+                                    <Tab
+                                        label={dayLabel + " Days"}
+                                        value={dayLabel}
+                                        onClick={(e) => handleTabChange(e, dayLabel)}
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            bgcolor: data.travelDays === dayLabel ? 'green' : 'transparent',
+                                            color: data.travelDays === dayLabel ? 'white' : 'black',
+                                            borderRadius: '30px',
+                                            '&:hover': {
+                                                bgcolor: 'green',
+                                                color: 'white',
+                                            },
+                                            border: '1px solid green'
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </Tabs>
+                </Box>
             </div>
         </div>
     );
@@ -280,36 +343,33 @@ const ReviewForm = ({ data }) => {
             </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                    <Typography variant="h6" sx={{ mb: 2 }}>Personal Details</Typography>
+                    <Typography variant="h6" sx={{ mb: 2 }}>Destination</Typography>
                     <Box sx={{ p: 2, border: '1px solid gray', borderRadius: '8px' }}>
-                        <Typography variant="body1"><strong>Full Name:</strong> {personalDetails.fullName || 'N/A'}</Typography>
-                        {/* Add other personal details if needed */}
+                        <Typography variant="body1"><strong>City:</strong> {personalDetails.city || 'N/A'}</Typography>
                     </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography variant="h6" sx={{ mb: 2 }}>Travel Preferences</Typography>
                     <Box sx={{ p: 2, border: '1px solid gray', borderRadius: '8px' }}>
                         <Typography variant="body1"><strong>Number of Travelers:</strong> {travelPreferences.numTravelers || 'N/A'}</Typography>
-                        {/* Add other travel preferences if needed */}
                     </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                    <Typography variant="h6" sx={{ mb: 2 }}>Budget</Typography>
+                    <Typography variant="h6" sx={{ mb: 2 }}>Travel Duration</Typography>
                     <Box sx={{ p: 2, border: '1px solid gray', borderRadius: '8px' }}>
                         <Typography variant="body1"><strong>Travel Days:</strong> {budget.travelDays || 'N/A'}</Typography>
-                        {/* Add other budget details if needed */}
                     </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                     <Typography variant="h6" sx={{ mb: 2 }}>Itinerary Details</Typography>
                     <Box sx={{ p: 2, border: '1px solid gray', borderRadius: '8px' }}>
                         <Typography variant="body1"><strong>Selected Interests:</strong> {itineraryDetails.selectedTabs?.join(', ') || 'N/A'}</Typography>
-                        {/* Add other itinerary details if needed */}
                     </Box>
                 </Grid>
             </Grid>
         </Box>
     );
 };
+
 
 export default Dashboard;
