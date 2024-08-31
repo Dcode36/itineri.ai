@@ -1,10 +1,11 @@
+const { default: axios } = require("axios");
 const City = require("../Models/PlacesToVisit/City");
 const { main } = require("./functions");
 function extractJsonString(text) {
   const startIndex = text.indexOf("```json");
-  console.log(startIndex);
+  // console.log(startIndex);
   const endIndex = text.indexOf("```", startIndex + 1);
-  console.log(endIndex);
+  // console.log(endIndex);
   if (startIndex === -1 || endIndex === -1) {
     return null; // or handle the error as needed
   }
@@ -12,7 +13,7 @@ function extractJsonString(text) {
   // Adjusting indices to exclude the ```json and ```
   let jsonString = text.substring(startIndex + 8, endIndex).trim();
   jsonString = jsonString.replaceAll(/\\n/g, "");
-  console.log(jsonString);
+  // console.log(jsonString);
   return jsonString;
 }
 const suggestPlaces = async (req, res) => {
@@ -57,7 +58,19 @@ const suggestTrip = async (req, res) => {
   console.log(req.body);
   try {
     const { city, interest, days } = req.body;
-    const Places = await City.findById(city).populate("places restaurent");
+    const Places = await City.findOne({ name: city }).populate(
+      "places restaurent"
+    );
+    let weather = {};
+    try {
+      weather = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=12ee96497996d8cb1141d61d89d7b5cf`
+      );
+      console.log(weather.data);
+      
+    } catch (error) {
+      console.log(error);
+    }
     console.log(Places);
     const suggestedPlaces = Places.places.filter((place) =>
       place.category.some((category) => interest.includes(category))
@@ -85,10 +98,10 @@ const suggestTrip = async (req, res) => {
     // combine all the places to visit, restaurants to visit, activities to enjoy, and a hotel to stay in at the end of the day.
 
     // `);
-    console.log("result:", result);
+    // console.log("result:", result);
     const jsonString = extractJsonString(result);
     // console.log("suggested:", suggestedPlaces);
-    res.json(jsonString);
+    res.json({jsonString, weather: weather.data});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
