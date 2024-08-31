@@ -24,7 +24,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<About />} />
+
           <Route path="/preferences" element={<Dashboard />} />
           <Route path="/plan" element={<Planner />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
