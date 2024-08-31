@@ -9,7 +9,6 @@ const busSchema = new mongoose.Schema(
     busNumber: {
       type: String,
       required: true,
-      unique: true,
     },
     source: {
       type: String,

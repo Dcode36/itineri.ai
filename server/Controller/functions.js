@@ -19,7 +19,7 @@ const Groq = require("groq-sdk");
 
 // // Initialize the Groq SDK with your API key
 const groq = new Groq({
-  apiKey: "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",
+  apiKey: "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",
 });
 
 async function main(text) {
@@ -35,17 +35,23 @@ async function main(text) {
       },
     ],
     model: "llama-3.1-70b-versatile",
-    temperature: 1,
-    max_tokens: 1024,
+    temperature: 0.1,
+    max_tokens: 4048,
     top_p: 1,
     stream: true,
     stop: null,
   });
 
+  let completeResponse = ""; // Initialize an empty string to store the complete response
+
   for await (const chunk of chatCompletion) {
     process.stdout.write(chunk.choices[0]?.delta?.content || "");
-    // console.log(chunk.choices[0]?.delta?.content);
+    const content = chunk.choices[0]?.delta?.content || "";
+    completeResponse += content; // Append each chunk to the complete response
   }
+
+  return completeResponse; // Return the complete response at the end
 }
+
 module.exports = { main };
 // main();
