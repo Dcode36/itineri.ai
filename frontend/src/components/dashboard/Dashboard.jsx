@@ -5,8 +5,8 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Tabs, Tab } from '@mui/material';
-import Navbar from '../landingpage/Navbar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,7 +14,9 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
-const steps = ['Destination', 'No of Travelers', 'Days', 'Interest', 'Review & Proceed'];
+import Navbar from '../landingpage/Navbar';
+
+const steps = ['Destination', 'No of Travelers', 'Days', 'Interest', 'Budget', 'Review & Proceed'];
 const TAB_ENUM = [
     'Historical',
     'Romantic',
@@ -26,6 +28,7 @@ const TAB_ENUM = [
     'Outdoor'
 ];
 const DAYS_OPTIONS = ['3', '5', '7'];
+const TAB_TRAVELERS = ['Solo', 'Couple', 'Group'];
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -33,7 +36,7 @@ const Dashboard = () => {
     const [formData, setFormData] = useState({
         personalDetails: {},
         travelPreferences: {},
-        budget: {},
+        budget: { min: '', max: '' },
         itineraryDetails: {},
     });
 
@@ -50,16 +53,14 @@ const Dashboard = () => {
         setFormData({
             personalDetails: {},
             travelPreferences: {},
-            budget: {},
+            budget: { min: '', max: '' },
             itineraryDetails: {},
         });
     };
 
     const handleSubmit = () => {
         // Submit logic here
-        navigate('/plan', { state: { formData } })
-
-
+        navigate('/plan', { state: { formData } });
     };
 
     const handleChange = (step, data) => {
@@ -76,10 +77,12 @@ const Dashboard = () => {
             case 1:
                 return <TravelPreferencesForm data={formData.travelPreferences} onChange={(data) => handleChange('travelPreferences', data)} />;
             case 2:
-                return <BudgetForm data={formData.budget} onChange={(data) => handleChange('budget', data)} />;
+                return <DaysForm data={formData.budget} onChange={(data) => handleChange('budget', data)} />;
             case 3:
                 return <ItineraryDetailsForm data={formData.itineraryDetails} onChange={(data) => handleChange('itineraryDetails', data)} />;
             case 4:
+                return <BudgetForm data={formData.budget} onChange={(data) => handleChange('budget', data)} />;
+            case 5:
                 return <ReviewForm data={formData} />;
             default:
                 return null;
@@ -123,11 +126,9 @@ const Dashboard = () => {
                                     Back
                                 </Button>
                                 {activeStep === steps.length - 1 ? (
-                                    <Button onClick={handleSubmit} className='btn btn-primary' color="primary" // This sets the button color to primary
-                                        variant="contained">Submit</Button>
+                                    <Button onClick={handleSubmit} className='btn btn-primary' color="primary" variant="contained">Submit</Button>
                                 ) : (
-                                    <Button onClick={handleNext} className='btn btn-primary' color="primary" // This sets the button color to primary
-                                        variant="contained">Next</Button>
+                                    <Button onClick={handleNext} className='btn btn-primary' color="primary" variant="contained">Next</Button>
                                 )}
                             </Box>
                         </React.Fragment>
@@ -154,7 +155,7 @@ const PersonalDetailsForm = ({ data, onChange }) => {
                         <Select
                             labelId="city-select-label"
                             id="city-select"
-                            value={data.city || ''} // Ensure the value points to the correct property
+                            value={data.city || ''}
                             label="City"
                             onChange={handleInputChange}
                             name='city'
@@ -177,8 +178,6 @@ const PersonalDetailsForm = ({ data, onChange }) => {
 };
 
 const TravelPreferencesForm = ({ data, onChange }) => {
-    const TAB_TRAVELERS = ['Solo', 'Couple', 'Group'];
-
     const handleTabChange = (event, newValue) => {
         onChange({ ...data, numTravelers: newValue });
     };
@@ -225,8 +224,7 @@ const TravelPreferencesForm = ({ data, onChange }) => {
     );
 };
 
-
-const BudgetForm = ({ data, onChange }) => {
+const DaysForm = ({ data, onChange }) => {
     const handleTabChange = (event, newValue) => {
         onChange({ ...data, travelDays: newValue });
     };
@@ -245,16 +243,16 @@ const BudgetForm = ({ data, onChange }) => {
                         sx={{ borderBottom: 1, borderColor: 'divider' }}
                     >
                         <div className='d-flex gap-3 flex-wrap justify-content-center my-3'>
-                            {DAYS_OPTIONS.map((dayLabel, index) => (
+                            {DAYS_OPTIONS.map((day, index) => (
                                 <div className='d-flex' key={index}>
                                     <Tab
-                                        label={dayLabel + " Days"}
-                                        value={dayLabel}
-                                        onClick={(e) => handleTabChange(e, dayLabel)}
+                                        label={`${day} Days`}
+                                        value={day}
+                                        onClick={(e) => handleTabChange(e, day)}
                                         sx={{
                                             fontWeight: 'bold',
-                                            bgcolor: data.travelDays === dayLabel ? 'green' : 'transparent',
-                                            color: data.travelDays === dayLabel ? 'white' : 'black',
+                                            bgcolor: data.travelDays === day ? 'green' : 'transparent',
+                                            color: data.travelDays === day ? 'white' : 'black',
                                             borderRadius: '30px',
                                             '&:hover': {
                                                 bgcolor: 'green',
@@ -333,6 +331,48 @@ const ItineraryDetailsForm = ({ data, onChange }) => {
     );
 };
 
+
+const BudgetForm = ({ data, onChange }) => {
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        onChange({ ...data, [name]: value });
+    };
+
+    return (
+        <div className='container'>
+            <div className='my-5'>
+                <Typography variant="h6" align="center" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>What is your budget for the trip?</Typography>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Minimum Budget"
+                            name="min"
+                            value={data.min || ''}
+                            onChange={handleInputChange}
+                            fullWidth
+                            variant="outlined"
+                            margin="normal"
+                            type="number"
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Maximum Budget"
+                            name="max"
+                            value={data.max || ''}
+                            onChange={handleInputChange}
+                            fullWidth
+                            variant="outlined"
+                            margin="normal"
+                            type="number"
+                        />
+                    </Grid>
+                </Grid>
+            </div>
+        </div>
+    );
+};
+
 const ReviewForm = ({ data }) => {
     const { personalDetails, travelPreferences, budget, itineraryDetails } = data;
 
@@ -364,6 +404,12 @@ const ReviewForm = ({ data }) => {
                     <Typography variant="h6" sx={{ mb: 2 }}>Itinerary Details</Typography>
                     <Box sx={{ p: 2, border: '1px solid gray', borderRadius: '8px' }}>
                         <Typography variant="body1"><strong>Selected Interests:</strong> {itineraryDetails.selectedTabs?.join(', ') || 'N/A'}</Typography>
+                    </Box>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" sx={{ mb: 2 }}>Budget Details</Typography>
+                    <Box sx={{ p: 2, border: '1px solid gray', borderRadius: '8px' }}>
+                        <Typography variant="body1"><strong>Budget:</strong> {budget.min} - {budget.max}</Typography>
                     </Box>
                 </Grid>
             </Grid>
