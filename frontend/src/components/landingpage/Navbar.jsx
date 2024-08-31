@@ -10,7 +10,6 @@ const Navbar = () => {
         navbarToggler.classList.toggle("active");
     };
 
-    console.log(user)
     return (
         <>
             {/*====== NAVBAR ONE PART START ======*/}
@@ -45,7 +44,10 @@ const Navbar = () => {
                                             <a href="#about" className='fs-5'>About</a>
                                         </li>
                                         <li className="nav-item">
-                                            <a href="#" className='fs-5'>TIP</a>
+                                            <a href="/recommendations" className='fs-5'>TripSage</a>
+                                        </li>
+                                        <li className="nav-item">
+                                            <a href="/travel-expense" className='fs-5'>TA</a>
                                         </li>
                                         <li className="nav-item">
                                             <a href="#contact" className='fs-5'>Contact</a>
