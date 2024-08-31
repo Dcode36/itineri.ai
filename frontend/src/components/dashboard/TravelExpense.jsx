@@ -24,7 +24,7 @@ const TravelExpense = () => {
   const handleSearch = async () => {
     try {
       // Fetch travel data
-      const travelResponse = await axios.post('https://t83s14q4-4000.inc1.devtunnels.ms/travel', {
+      const travelResponse = await axios.post('https://test.collegestorehub.com/travel', {
         source,
         destination,
       });

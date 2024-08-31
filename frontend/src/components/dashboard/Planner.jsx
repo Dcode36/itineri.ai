@@ -25,7 +25,7 @@ const Planner = () => {
                 let config = {
                     method: "post",
                     maxBodyLength: Infinity,
-                    url: "https://t83s14q4-4000.inc1.devtunnels.ms/suggestTrip",
+                    url: "https://test.collegestorehub.com/suggestTrip",
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -117,7 +117,7 @@ const Planner = () => {
 
 
 
-                                            <div className="d-flex align-items-start justify-content-start p-3" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px', maxWidth: '400px', minHeight: "330px" }}>
+                                            <div className="d-flex align-items-start justify-content-start p-3" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px', maxWidth: '400px', minHeight: "100%" }}>
                                                 <div className="blog-image">
                                                     <a href="">
                                                         <img src={item.hotelToStayIn.imageUrl} height="200px" width="350px" alt="Blog" style={{ borderRadius: '15px' }} />
