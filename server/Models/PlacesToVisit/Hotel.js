@@ -8,16 +8,17 @@ const hotelSchema = new mongoose.Schema(
     },
     imageUrl: {
       type: String,
-      required: true,
     },
     location: {
+      address: {
+        type: String,
+        required: true,
+      },
       logitude: {
         type: Number,
-        required: true,
       },
       latitude: {
         type: Number,
-        required: true,
       },
     },
     reviews: [
@@ -39,7 +40,7 @@ const hotelSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
-    price: { type: Number, required: true, min: 0, max: 5 },
+    price: { type: Number},
     categoryOfFood: {
       type: [String], // Array of food categories
       required: true,
@@ -50,7 +51,6 @@ const hotelSchema = new mongoose.Schema(
     },
     mapLink: {
       type: String,
-      required: true,
     },
   },
   {

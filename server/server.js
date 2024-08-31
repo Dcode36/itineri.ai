@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 require("./Config/db");
-require("./Models/ModeOfTravel/Bus");
+require("./Models/PlacesToVisit/Events");
 
 //hotels routes
 app.get("/hotels", getAllHotels);
@@ -21,7 +21,7 @@ app.get("/hotel/:id", getHotelById);
 
 //cities routes
 app.get("/cities", getAvailableCities);
-app.get("/city/:id", getCity);
+app.post("/city", getCity);
 
 //ai routes
 app.post("/suggestPlaces", suggestPlaces);
@@ -30,6 +30,7 @@ app.post("/suggestTrips", suggestTripDemo);
 
 // travel routes
 app.post("/travel", getTravelRoutes);
+// app.post("/travelPlan", getBestTravel);
 app.listen(3000, () => {
   console.log("Hello World");
 });
