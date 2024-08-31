@@ -82,8 +82,7 @@ const Contact = () => {
                                             <i class="bi bi-backpack4"></i> Itineri.<span>AI</span>
                                         </div>
                                         <p className="text">
-                                            Lorem Ipsum is simply dummy text of the printing and
-                                            typesetting industry.
+                                            Dynamic, Personalized Travel Itineraries Tailored Just for You
                                         </p>
                                     </div>
                                 </div>
