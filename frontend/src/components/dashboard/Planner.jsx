@@ -90,6 +90,9 @@ const Planner = () => {
         fetchData();
     }, [data]);
 
+    const handleExport = () => {
+        window.print();
+    };
     return (
         <div>
             <Navbar />
@@ -222,7 +225,9 @@ const Planner = () => {
                             </div>
                             <MapComponent coordinates={coords} />
 
-
+                            <div className='row my-5 justify-content-end'>
+                                <p className='btn btn-primary' onClick={handleExport}>Export</p>
+                            </div>
                         </div>
                     </div>
                 </section >
