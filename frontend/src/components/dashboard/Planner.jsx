@@ -146,88 +146,120 @@ const Planner = () => {
                                     <p>No data available.</p>
                                 )}
                             </div>
-                            <div className='row'>
-
-                                <div className="col-9">
-                                    <div className="">
-                                        <div className="row">
-                                            <h3 className='m-5'>Places To Visit</h3>
-                                            <div className="col-12 d-flex flex-wrap">
-                                                {dashData && dashData.length > 0 && dashData[0].placesToVisit ? (
-                                                    dashData[0].placesToVisit.map((item, index) => (
-                                                        <div key={index} className="p-3" style={{ margin: '' }}>
-                                                            <div className=" p-3" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px', maxWidth: '400px', maxHeight: '400px' }}>
-                                                                <div className="blog-image">
-                                                                    <a href={item.mapLink || "#"} target="_blank" rel="noopener noreferrer">
-                                                                        <img src={item.imageUrl} height="150px" width="100%" alt={item.name} style={{ borderRadius: '15px' }} />
-                                                                    </a>
-                                                                </div>
-                                                                <div className="blog-content m-2 p-2">
-                                                                    <a href="#" className="category text-dark">{item.category?.join(', ') || 'NA'}</a>
-                                                                    <h5 className="blog-title py-1">
-                                                                        <a href="#" className='text-dark fw-bold' style={{ fontSize: '16px' }}>
-                                                                            {item.name}
-                                                                        </a>
-                                                                    </h5>
-                                                                    <span className='fs-6' style={{ fontSize: '16px' }}><b>Price Per Adult:</b> ${item.pricePerAdult}</span> <br />
-                                                                    <span className='py-1 '><b>Duration:</b> {item.duration}</span> <br />
-                                                                    <span><b>Address:</b> {item.location.address}</span> <br />
-                                                                    <p className="text" style={{ fontSize: '16px' }}>
-                                                                        {item.description}
-                                                                    </p>
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <p>No data available.</p>
-                                                )}
-                                            </div>
-
-                                        </div>
-                                        <div className='col-12'>
-                                            <h3 className='m-5'>Restaurants & Dine In</h3>
-                                            {dashData && dashData.length > 0 && dashData[0].restaurantsToDineAt ? (
+                            {dashData.map((i, index) => {
+                                let coord = [];
+                                i.placesToVisit.forEach(place => {
+                                    coord.push({
+                                        name: place.name,
+                                        lng: place.location.longitude,
+                                        lat: place.location.latitude,
+                                        type: "place"
+                                    });
+                                });
+        
+                                // Extract restaurants to dine at
+                                i.restaurantsToDineAt.forEach(restaurant => {
+                                    coord.push({
+                                        name: restaurant.name,
+                                        lng: restaurant.location.longitude,
+                                        lat: restaurant.location.latitude,
+                                        type: "restaurant"
+                                    });
+                                });
+        
+                                // Extract hotel to stay in
+                                coord.push({
+                                    name: i.hotelToStayIn.name,
+                                    lng: i.hotelToStayIn.location.longitude,
+                                    lat: i.hotelToStayIn.location.latitude,
+                                    type: "hotel"
+                                });
+                                return (<div>
+                                    <div className='row mt-5'>
+                                        <h2>Day {index + 1}</h2>
+                                        <div className="col-9">
+                                            <div className="">
                                                 <div className="row">
-                                                    {dashData[0].restaurantsToDineAt.map((item, index) => (
-                                                        <div key={index} className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
-                                                            <div className="card h-100" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px' }}>
-                                                                <div className="card-img-top">
-                                                                    <a href={item.mapLink || "#"} target="_blank" rel="noopener noreferrer">
-                                                                        <img src={item.imageUrl} alt={item.name} style={{ borderRadius: '15px 15px 0 0', height: '250px', objectFit: 'cover', width: '100%' }} />
-                                                                    </a>
-                                                                </div>
-                                                                <div className="card-body p-3">
-                                                                    <a href="#" className="category text-dark" style={{ fontSize: '14px' }}>{item.category?.join(', ') || 'NA'}</a>
-                                                                    <h5 className="card-title py-1" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                                                                        <a href="#" className='text-dark' style={{ textDecoration: 'none' }}>
-                                                                            {item.name}
-                                                                        </a>
-                                                                    </h5>
-                                                                    <p className='mb-1' style={{ fontSize: '14px' }}><b>Duration:</b> {item.duration}</p>
-                                                                    <p className='mb-1' style={{ fontSize: '14px' }}><b>Address:</b> {item.location.address}</p>
-                                                                    <p className="text" style={{ fontSize: '13px' }}>
-                                                                        {item.description}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <p>No data available.</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+                                                    <h3 className='m-5'>Places To Visit</h3>
+                                                    <div className="col-12 d-flex flex-wrap">
+                                                        {dashData && dashData.length > 0 && dashData[index].placesToVisit ? (
+                                                            dashData[index].placesToVisit.map((item, index) => (
+                                                                <div key={index} className="p-3" style={{ margin: '' }}>
+                                                                    <div className=" p-3" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px', maxWidth: '400px', maxHeight: '400px' }}>
+                                                                        <div className="blog-image">
+                                                                            <a href={item.mapLink || "#"} target="_blank" rel="noopener noreferrer">
+                                                                                <img src={item.imageUrl} height="150px" width="100%" alt={item.name} style={{ borderRadius: '15px' }} />
+                                                                            </a>
+                                                                        </div>
+                                                                        <div className="blog-content m-2 p-2">
+                                                                            <a href="#" className="category text-dark">{item.category?.join(', ') || 'NA'}</a>
+                                                                            <h5 className="blog-title py-1">
+                                                                                <a href="#" className='text-dark fw-bold' style={{ fontSize: '16px' }}>
+                                                                                    {item.name}
+                                                                                </a>
+                                                                            </h5>
+                                                                            <span className='fs-6' style={{ fontSize: '16px' }}><b>Price Per Adult:</b> ${item.pricePerAdult}</span> <br />
+                                                                            <span className='py-1 '><b>Duration:</b> {item.duration}</span> <br />
+                                                                            <span><b>Address:</b> {item.location.address}</span> <br />
+                                                                            <p className="text" style={{ fontSize: '16px' }}>
+                                                                                {item.description}
+                                                                            </p>
 
-                            </div>
-                            <MapComponent coordinates={coords} />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <p>No data available.</p>
+                                                        )}
+                                                    </div>
+
+                                                </div>
+                                                <div className='col-12'>
+                                                    <h3 className='m-5'>Restaurants & Dine In</h3>
+                                                    {dashData && dashData.length > 0 && dashData[index].restaurantsToDineAt ? (
+                                                        <div className="row">
+                                                            {dashData[index].restaurantsToDineAt.map((item, index) => (
+                                                                <div key={index} className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                                                                    <div className="card h-100" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px' }}>
+                                                                        <div className="card-img-top">
+                                                                            <a href={item.mapLink || "#"} target="_blank" rel="noopener noreferrer">
+                                                                                <img src={item.imageUrl} alt={item.name} style={{ borderRadius: '15px 15px 0 0', height: '250px', objectFit: 'cover', width: '100%' }} />
+                                                                            </a>
+                                                                        </div>
+                                                                        <div className="card-body p-3">
+                                                                            <a href="#" className="category text-dark" style={{ fontSize: '14px' }}>{item.category?.join(', ') || 'NA'}</a>
+                                                                            <h5 className="card-title py-1" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                                                                <a href="#" className='text-dark' style={{ textDecoration: 'none' }}>
+                                                                                    {item.name}
+                                                                                </a>
+                                                                            </h5>
+                                                                            <p className='mb-1' style={{ fontSize: '14px' }}><b>Duration:</b> {item.duration}</p>
+                                                                            <p className='mb-1' style={{ fontSize: '14px' }}><b>Address:</b> {item.location.address}</p>
+                                                                            <p className="text" style={{ fontSize: '13px' }}>
+                                                                                {item.description}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p>No data available.</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <MapComponent coordinates={coord} />
+                                </div>)
+                            })}
+                            
 
                             <div className='row my-5 justify-content-end'>
-                                <p className='btn btn-primary' onClick={handleExport}>Export</p>
-                            </div>
+                                    <p className='btn btn-primary' onClick={handleExport}>Export</p>
+                                </div>
                         </div>
                     </div>
                 </section >

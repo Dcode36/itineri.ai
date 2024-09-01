@@ -21,7 +21,7 @@ const MapComponent = ({ coordinates }) => {
         return (
             <MapContainer
                 center={[coordinates[0]?.lat || 51.505, coordinates[0]?.lng || -0.09]}
-                zoom={13}
+                zoom={10}
                 style={{ height: "500px", width: "100%" }}
             >
                 <TileLayer
