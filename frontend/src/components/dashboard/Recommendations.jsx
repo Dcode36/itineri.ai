@@ -91,6 +91,7 @@ const Recommendations = () => {
     <div className="chatbot-container">
       <Navbar />
       <div className="chat-window">
+        <p className='text-danger text-center my-5 fs-3 fw-bold'>"This Bot is under maintenance. Thank You!"</p>
         {messages.map((message, index) => (
           <div
             key={index}

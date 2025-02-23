@@ -25,7 +25,7 @@ const Planner = () => {
                 let config = {
                     method: "post",
                     maxBodyLength: Infinity,
-                    url: "https://test.collegestorehub.com/suggestTrip",
+                    url: "http://localhost:6700/suggestTrip",
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -36,7 +36,7 @@ const Planner = () => {
                 setTimeout(async () => {
                     try {
                         const response = await axios.request(config);
-                        const parsedData = JSON.parse(response.data);
+                        const parsedData =response.data;
                         console.log(parsedData);
                         setDashData(parsedData);
                         console.log(parsedData[0].placesToVisit)
@@ -101,8 +101,6 @@ const Planner = () => {
                     <img src={gif} height='150px' width='150px' alt="Loading..." />
                     <p>Wait! Generating suggestions just for you :</p>
                 </div>
-            ) : error ? (
-                <p>Error: {error}</p>
             ) : (
                 <section className=" pb-5">
                     <div className="container-fluid">
@@ -111,8 +109,8 @@ const Planner = () => {
                             <h3 className='m-5'>Hotels</h3>
                             <div className=" d-flex justify-content-end flex-wrap" style={{ justifyContent: "flex-start" }}>
 
-                                {dashData && dashData.length > 0 ? (
-                                    dashData.map((item, index) => (
+                                {dashData && dashData?.length > 0 ? (
+                                    dashData?.map((item, index) => (
                                         <div key={index} className="p-3" style={{ margin: '0 auto' }}>
 
 
@@ -146,7 +144,7 @@ const Planner = () => {
                                     <p>No data available.</p>
                                 )}
                             </div>
-                            {dashData.map((i, index) => {
+                            {dashData?.map((i, index) => {
                                 let coord = [];
                                 i.placesToVisit.forEach(place => {
                                     coord.push({
@@ -183,7 +181,7 @@ const Planner = () => {
                                                     <h3 className='m-5'>Places To Visit</h3>
                                                     <div className="col-12 d-flex flex-wrap">
                                                         {dashData && dashData.length > 0 && dashData[index].placesToVisit ? (
-                                                            dashData[index].placesToVisit.map((item, index) => (
+                                                            dashData[index]?.placesToVisit?.map((item, index) => (
                                                                 <div key={index} className="p-3" style={{ margin: '' }}>
                                                                     <div className=" p-3" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px', maxWidth: '400px', maxHeight: '400px' }}>
                                                                         <div className="blog-image">
@@ -219,7 +217,7 @@ const Planner = () => {
                                                     <h3 className='m-5'>Restaurants & Dine In</h3>
                                                     {dashData && dashData.length > 0 && dashData[index].restaurantsToDineAt ? (
                                                         <div className="row">
-                                                            {dashData[index].restaurantsToDineAt.map((item, index) => (
+                                                            {dashData[index]?.restaurantsToDineAt?.map((item, index) => (
                                                                 <div key={index} className="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
                                                                     <div className="card h-100" style={{ boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px', borderRadius: '15px' }}>
                                                                         <div className="card-img-top">

@@ -24,7 +24,7 @@ const TravelExpense = () => {
   const handleSearch = async () => {
     try {
       // Fetch travel data
-      const travelResponse = await axios.post('https://test.collegestorehub.com/travel', {
+      const travelResponse = await axios.post('http://localhost:6700/travel', {
         source,
         destination,
       });
@@ -49,7 +49,7 @@ const TravelExpense = () => {
           Find the Best <span className='text-primary'>Travel Option</span>
         </h3>
         <p className='text-center'>Add your location and destination</p>
-
+        <p className='text-center py-2'>eg. Source: Kolhapur, Destination: Pune</p>
         <div className='d-flex justify-content-center align-items-center mt-3 flex-column'>
           <div className='d-flex align-items-center gap-2'>
             <TextField
