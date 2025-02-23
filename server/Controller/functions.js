@@ -19,7 +19,7 @@ const Groq = require("groq-sdk");
 
 // // Initialize the Groq SDK with your API key
 const groq = new Groq({
-  apiKey: "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",
+  apiKey: process.env.GROK_KEY,
 });
 
 async function main(text) {
@@ -59,7 +59,7 @@ const {
   HarmBlockThreshold,
 } = require("@google/generative-ai");
 
-const apiKey = "AIzaSyA19CNoX1Sh01mx2oLsm-M2NynAKw-F37g";
+const apiKey = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
