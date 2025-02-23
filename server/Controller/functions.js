@@ -59,7 +59,7 @@ const {
   HarmBlockThreshold,
 } = require("@google/generative-ai");
 
-const apiKey = "AIzaSyBdEbZ-23-Ps-lyxb2nxcTq16RzjZVvFBo";
+const apiKey = "AIzaSyA19CNoX1Sh01mx2oLsm-M2NynAKw-F37g";
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
@@ -88,7 +88,7 @@ async function run(prompt) {
  // See https://ai.google.dev/gemini-api/docs/safety-settings
   });
   console.log(result.response.text());
-  return result.response.text();
+  return JSON.parse(result.response.text());
 }
 
 // run();

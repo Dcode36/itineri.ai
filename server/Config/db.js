@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 
 // Replace <connection-string> with your actual MongoDB connection string
-const connectionString =
-  "mongodb+srv://TIP:TIP@cluster0.kgr61gs.mongodb.net/ItenaryAI";
+const connectionString =process.env.MONGO_URI;
 
 mongoose
   .connect(connectionString, {

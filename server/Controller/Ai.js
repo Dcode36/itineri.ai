@@ -10,7 +10,11 @@ const suggestPlaces = async (req, res) => {
     const Places = await City.findById(city).populate("places restaurent");
     console.log(Places);
     const suggestedPlaces = Places.places.filter((place) =>
-      place.category.some((category) => interest.includes(category))
+      place./* The above code is a multi-line comment in JavaScript. It is used to add comments or
+      notes in the code that are not executed by the JavaScript engine. Comments are helpful
+      for documenting code and providing explanations for other developers who may work on the
+      code in the future. */
+      category.some((category) => interest.includes(category))
     );
     const text = `Generate a JSON array for a 2-day trip to Kolhapur. For each day, include in sequence: places to visit, restaurants to dine at, activities to enjoy, and a hotel to stay in at the end of the day. I am particularly interested in the following places: ${suggestedPlaces.join(
       ", "
@@ -73,7 +77,7 @@ const suggestTrip = async (req, res) => {
         ", "
       )}. Based on the number of days, prioritize the most important places and exclude those of lesser significance. Provide a detailed JSON array of the selected important places, including all relevant information. Additionally, create a JSON array of restaurants to visit from the following options: ${Places.restaurent.join(
         ", "
-      )}. Include all available details for the chosen places and restaurants.`
+      )}. Include all available details for the chosen places and restaurants. also give result in JSON format so give data only json.`
     );
 
     // Store the result in the cache

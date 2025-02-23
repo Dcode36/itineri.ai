@@ -1,4 +1,5 @@
 const express = require("express");
+require('dotenv').config();
 const axios = require("axios");
 const { getAllHotels, getHotelById } = require("./Controller/Hotel");
 const { getAvailableCities, getCity } = require("./Controller/City");
@@ -31,6 +32,6 @@ app.post("/suggestTrips", suggestTripDemo);
 // travel routes
 app.post("/travel", getTravelRoutes);
 // app.post("/travelPlan", getBestTravel);
-app.listen(3000, () => {
+app.listen(6700, () => {
   console.log("Hello World");
 });
